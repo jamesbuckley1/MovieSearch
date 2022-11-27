@@ -8,11 +8,14 @@
 import SwiftUI
 
 struct MovieDetailView: View {
+    @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel: MovieDetailViewModel
+    
     let imageSize: CGFloat = 250
     
     init(movie: Movie) {
         _viewModel = StateObject(wrappedValue: MovieDetailViewModel(movie: movie))
+       
     }
     var body: some View {
         VStack {
@@ -55,7 +58,9 @@ struct MovieDetailView: View {
                 }
             }
         }
-        
+        .alert(isPresented: $viewModel.showAlert) {
+            Alert(title: Text("Error"), message: Text(viewModel.errorMessage), dismissButton: .default(Text("OK"), action: { dismiss() }))
+                            }
     }
 }
 

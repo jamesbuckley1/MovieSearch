@@ -11,8 +11,10 @@ class MovieDetailViewModel: ObservableObject {
     let movie: Movie
     @Published var isLoading: Bool = false
     @Published var searchSuccessful: Bool = false
-    @Published var errorMessage: String? = nil
+    @Published var errorMessage: String = ""
     @Published var movieDetail: MovieDetail?
+    
+    @Published var showAlert = false
     
     let service = APIService()
     
@@ -26,7 +28,7 @@ class MovieDetailViewModel: ObservableObject {
     func fetchMovieDetail(for imdbId: String) {
         isLoading = true
         searchSuccessful = false
-        
+        showAlert = false
         
         
         service.fetchMovieDetail(imdbId: imdbId) { [weak self] result in
@@ -34,12 +36,13 @@ class MovieDetailViewModel: ObservableObject {
                 switch result {
                 case .success(let result):
                     self?.movieDetail = result
-                    //completion(true)
+           
                     self?.searchSuccessful = true
+                    //completion(true)
                 case .failure(let error):
-                    print("Error: \(error.localizedDescription)")
-                    self?.errorMessage = error.localizedDescription
-                    //completion(false)
+                    self?.errorMessage = error.description
+                    self?.searchSuccessful = false
+                    self?.showAlert = true
                 }
                 
              
