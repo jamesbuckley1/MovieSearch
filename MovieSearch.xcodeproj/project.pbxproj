@@ -126,7 +126,6 @@
 				1A32D6642932AFC2003BC189 /* Networking */,
 				1A32D6612932AEB5003BC189 /* Model */,
 				1A32D63529316158003BC189 /* MovieSearchApp.swift */,
-				1A32D63729316158003BC189 /* ContentView.swift */,
 				1A32D6392931615B003BC189 /* Assets.xcassets */,
 				1A32D63B2931615B003BC189 /* Preview Content */,
 			);
@@ -183,6 +182,7 @@
 				1A32D66E2932E5B2003BC189 /* MovieListView.swift */,
 				1A32D6732933BD28003BC189 /* MovieRow.swift */,
 				1A32D6752933BDA1003BC189 /* MovieDetailView.swift */,
+				1A32D63729316158003BC189 /* ContentView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
