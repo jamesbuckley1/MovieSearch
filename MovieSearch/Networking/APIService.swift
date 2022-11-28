@@ -8,8 +8,10 @@
 import Foundation
 
 class APIService {
-    func fetchMovies(searchTerm: String, completion: @escaping(Result<MovieResult, APIError>) -> Void) {
-        let url = createMovieSearchURL(for: searchTerm)
+    static let shared = APIService()
+    
+    func fetchMovies(searchTerm: String, page: Int, completion: @escaping(Result<MovieResult, APIError>) -> Void) {
+        let url = createMovieSearchURL(for: searchTerm, page: page)
         fetch(type: MovieResult.self, url: url, completion: completion)
     }
     
@@ -18,22 +20,22 @@ class APIService {
         fetch(type: MovieDetail.self, url: url, completion: completion)
     }
     
-    func createMovieSearchURL(for searchTerm: String) -> URL? {
+    func createMovieSearchURL(for searchTerm: String, page: Int) -> URL? {
         let baseURL = APIConstants.endpoint.rawValue
         let searchTermFormatted = searchTerm.replacingOccurrences(of: " ", with: "+")
-        let queryItems = [URLQueryItem(name: "s", value: searchTermFormatted),
-                          URLQueryItem(name: "apikey", value: APIConstants.apiKey.rawValue)]
+        let queryItems = [URLQueryItem(name: APIConstants.searchQueryComponent.rawValue, value: searchTermFormatted),
+                          URLQueryItem(name: APIConstants.apikeyComponent.rawValue, value: APIConstants.apiKey.rawValue),
+                          URLQueryItem(name: APIConstants.pageComponent.rawValue, value: String(page))]
         
         var components = URLComponents(string: baseURL)
         components?.queryItems = queryItems
         return components?.url
-
     }
     
     func createMovieDetailURL(for imdbId: String) -> URL? {
         let baseURL = APIConstants.endpoint.rawValue
-        let queryItems = [URLQueryItem(name: "i", value: imdbId),
-                          URLQueryItem(name: "apikey", value: APIConstants.apiKey.rawValue)]
+        let queryItems = [URLQueryItem(name: APIConstants.idQueryComponent.rawValue, value: imdbId),
+                          URLQueryItem(name: APIConstants.apikeyComponent.rawValue, value: APIConstants.apiKey.rawValue)]
         var components = URLComponents(string: baseURL)
         components?.queryItems = queryItems
         return components?.url
@@ -47,17 +49,11 @@ class APIService {
         }
         
         URLSession.shared.dataTask(with: url) { data, response, error in
-            if let err = error as? URLError {
-                if err.code == URLError.Code.notConnectedToInternet {
-                    completion(Result.failure(APIError.noInternet))
-                } else {
-                    completion(Result.failure(APIError.urlError))
-                }
+            if error is URLError {
+                completion(Result.failure(APIError.urlError))
             } else if let response = response as? HTTPURLResponse, !(200...299).contains(response.statusCode) {
                 completion(Result.failure(APIError.badResponse(responseCode: response.statusCode)))
             } else if let data = data {
-                print(response)
-                print(data)
                 do {
                     let result = try JSONDecoder().decode(type, from: data)
                     print(result)

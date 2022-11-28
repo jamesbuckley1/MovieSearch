@@ -21,10 +21,6 @@ struct MovieRow: View {
             }
             .frame(width: 100, height: 100)
             .cornerRadius(5)
-            
-
-                
-            
             Text(movie.title)
         }
     }

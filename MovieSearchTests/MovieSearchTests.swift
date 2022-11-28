@@ -18,18 +18,47 @@ final class MovieSearchTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
+    func test_MovieSearchViewModel_fetchesMoviesTitledStarWars() {
+        let vm = MockMovieSearchViewModel()
+        
+        vm.fetchMovies(for: "Star Wars") { success in
+            if success {
+                XCTAssertTrue(vm.movies.count > 0)
+            }
+        }
     }
+    
+    func test_MovieDetailViewModel_fetchesMovieWithId_tt0080684() {
+        let id = "tt0080684"
+        let title = "Star Wars: Episode V - The Empire Strikes Back"
+        
+        let movie = Movie(id: id, title: title, poster: "", year: "")
+        let vm = MockMovieDetailViewModel(movie: movie)
+        
+        vm.fetchMovieDetail(for: movie.id) { movieDetail in
+            XCTAssertEqual(movieDetail.title, movie.title)
+        }
+    }
+    
+    func test_APIService_searchQueryURLGeneration_forQueryStarWars_isValid() {
+        let searchTerm = "Star Wars"
+        let expectedUrl = "https://www.omdbapi.com/?s=Star+Wars&apikey=\(APIConstants.apiKey.rawValue)&page=1"
+        
+        let apiService = APIService()
 
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
+        if let url = apiService.createMovieSearchURL(for: searchTerm, page: 1) {
+            XCTAssertEqual(url.absoluteString, expectedUrl)
+        }
+    }
+    
+    func test_APIService_idQueryURLGeneration_forQuery_tt0080684_isValid() {
+        let id = "tt0080684"
+        let expectedUrl = "https://www.omdbapi.com/?i=\(id)&apikey=\(APIConstants.apiKey.rawValue)"
+        
+        let apiService = APIService()
+        
+        if let url = apiService.createMovieDetailURL(for: id) {
+            XCTAssertEqual(url.absoluteString, expectedUrl)
         }
     }
 

@@ -15,8 +15,8 @@ struct MovieDetailView: View {
     
     init(movie: Movie) {
         _viewModel = StateObject(wrappedValue: MovieDetailViewModel(movie: movie))
-       
     }
+    
     var body: some View {
         VStack {
             AsyncImage(url: URL(string: viewModel.movie.poster)) { image in
@@ -53,14 +53,13 @@ struct MovieDetailView: View {
                                 Text(movieDetail.imdbRating)
                             }
                         }
-                        
                     }
                 }
             }
         }
         .alert(isPresented: $viewModel.showAlert) {
             Alert(title: Text("Error"), message: Text(viewModel.errorMessage), dismissButton: .default(Text("OK"), action: { dismiss() }))
-                            }
+        }
     }
 }
 
